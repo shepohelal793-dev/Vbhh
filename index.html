@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Thumb AI</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: #080b14;
+  color: #e8eaf0;
+  min-height: 100vh;
+  direction: rtl;
+  padding-bottom: 60px;
+}
+.header {
+  background: #0a0e1c;
+  border-bottom: 1px solid #1e2740;
+  padding: 16px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 99;
+}
+.logo { display: flex; align-items: center; gap: 10px; }
+.logo-icon {
+  width: 36px; height: 36px;
+  background: linear-gradient(135deg,#f5a623,#e84393);
+  border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 17px;
+}
+.logo-name { font-weight: 900; font-size: 17px; color: #f5a623; letter-spacing: 2px; }
+.logo-sub { font-size: 10px; color: #6b7a99; }
+.badge {
+  background: rgba(245,166,35,0.1);
+  border: 1px solid rgba(245,166,35,0.3);
+  color: #f5a623;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+}
+.body { max-width: 580px; margin: 0 auto; padding: 24px 14px 0; }
+.title { text-align: center; margin-bottom: 24px; }
+.title h1 { font-size: 24px; font-weight: 900; line-height: 1.3; margin-bottom: 8px; }
+.title h1 span { color: #f5a623; }
+.title p { color: #6b7a99; font-size: 13px; line-height: 1.7; }
+.card {
+  background: #141927;
+  border: 1px solid #1e2740;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+.card-head { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+.card-head span { font-size: 22px; }
+.card-title { font-weight: 700; font-size: 15px; }
+.card-sub { font-size: 12px; color: #6b7a99; }
+.lbl {
+  font-size: 11px; color: #6b7a99;
+  letter-spacing: 1px; text-transform: uppercase;
+  display: block; margin-bottom: 6px; margin-top: 12px;
+}
+.inp, textarea {
+  width: 100%;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid #1e2740;
+  border-radius: 10px;
+  padding: 12px 14px;
+  color: #e8eaf0;
+  font-family: inherit;
+  font-size: 15px;
+  outline: none;
+}
+.inp { direction: ltr; }
+textarea { direction: rtl; resize: vertical; min-height: 80px; }
+.inp:focus, textarea:focus {
+  border-color: #f5a623;
+  background: rgba(245,166,35,0.04);
+}
+.inp-rtl { direction: rtl; }
+.key-wrap { position: relative; }
+.key-wrap .inp { padding-left: 46px; }
+.eye-btn {
+  position: absolute;
+  left: 12px; top: 50%;
+  transform: translateY(-50%);
+  background: none; border: none;
+  cursor: pointer; font-size: 18px;
+  color: #6b7a99;
+}
+
+/* Upload */
+.upload-label { display: block; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.upload-area {
+  border: 2px dashed #2a3555;
+  border-radius: 12px;
+  padding: 28px 16px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+.upload-area .icon { font-size: 36px; }
+.upload-area .txt { font-weight: 700; font-size: 15px; }
+.upload-area .hint { font-size: 12px; color: #6b7a99; }
+.upload-btn-inner {
+  display: inline-block;
+  padding: 11px 28px;
+  background: linear-gradient(135deg,#f5a623,#e8940a);
+  border-radius: 10px;
+  color: #000;
+  font-weight: 800;
+  font-size: 15px;
+}
+.preview-img { width: 100%; max-height: 170px; object-fit: cover; border-radius: 10px; display: block; }
+.ok-txt { color: #00e676; font-size: 12px; margin: 8px 0; text-align: center; }
+.change-btn {
+  display: block;
+  text-align: center;
+  padding: 10px;
+  background: rgba(245,166,35,0.12);
+  border: 1px solid rgba(245,166,35,0.4);
+  border-radius: 10px;
+  color: #f5a623;
+  font-weight: 700;
+  font-size: 14px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Buttons */
+.gen-btn {
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(135deg,#f5a623,#e8940a);
+  border: none;
+  border-radius: 14px;
+  color: #000;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 24px rgba(245,166,35,0.35);
+  -webkit-tap-highlight-color: transparent;
+}
+.gen-btn:disabled {
+  background: #1e2740;
+  color: #6b7a99;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+.hint-txt { text-align: center; font-size: 12px; color: #6b7a99; margin-bottom: 10px; }
+
+/* Spinner */
+.spinner-wrap { text-align: center; margin-bottom: 20px; }
+.spinner {
+  display: inline-block;
+  width: 40px; height: 40px;
+  border: 4px solid #1e2740;
+  border-top-color: #f5a623;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.spin-msg { color: #6b7a99; font-size: 13px; margin-top: 10px; }
+
+/* Error */
+.error-box {
+  background: rgba(232,67,147,0.1);
+  border: 1px solid rgba(232,67,147,0.3);
+  border-radius: 10px;
+  padding: 14px 16px;
+  font-size: 13px;
+  color: #ff6eb0;
+  margin-bottom: 16px;
+}
+
+/* Result */
+.result-card {
+  background: #141927;
+  border: 2px solid #00e676;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+.result-title { color: #00e676; font-weight: 700; font-size: 15px; text-align: center; margin-bottom: 14px; }
+.result-img { width: 100%; border-radius: 12px; display: block; margin-bottom: 14px; }
+.dl-btn {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg,#00e676,#00b34a);
+  border: none;
+  border-radius: 12px;
+  color: #000;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+.reset-btn {
+  width: 100%;
+  padding: 12px;
+  background: transparent;
+  border: 1px solid #1e2740;
+  border-radius: 12px;
+  color: #6b7a99;
+  font-family: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">
+    <div class="logo-icon">🎯</div>
+    <div>
+      <div class="logo-name">THUMB AI</div>
+      <div class="logo-sub">مولّد الصور المصغرة</div>
+    </div>
+  </div>
+  <div class="badge">⚡ Imagen 3</div>
+</div>
+
+<div class="body">
+
+  <div class="title">
+    <h1>ولّد <span>Thumbnail</span> جاهز فوراً</h1>
+    <p>ارفع صورتيك والـ AI يحلل ويولّد الصورة الجديدة مباشرةً</p>
+  </div>
+
+  <!-- API Key -->
+  <div class="card">
+    <div class="card-head">
+      <span>🔑</span>
+      <div>
+        <div class="card-title">Google AI Studio API Key</div>
+        <div class="card-sub">من aistudio.google.com — مش هيتحفظ</div>
+      </div>
+    </div>
+    <div class="key-wrap">
+      <input id="apiKey" class="inp" type="password" placeholder="AIzaSy..." />
+      <button class="eye-btn" onclick="toggleKey()">👁️</button>
+    </div>
+    <div style="font-size:12px;color:#6b7a99;margin-top:8px;">
+      اعمل Key مجاني من
+      <a href="https://aistudio.google.com/apikey" target="_blank" style="color:#f5a623;">aistudio.google.com/apikey</a>
+    </div>
+  </div>
+
+  <!-- Ref Image -->
+  <div class="card">
+    <div class="card-head">
+      <span>🖼️</span>
+      <div>
+        <div class="card-title">الصورة المرجعية (نمطك)</div>
+        <div class="card-sub">الـ AI هيقلد أسلوبها</div>
+      </div>
+    </div>
+    <input id="refInput" type="file" accept="image/*" style="display:none" onchange="handleFile(this,'ref')">
+    <div id="refEmpty">
+      <label for="refInput" class="upload-label">
+        <div class="upload-area">
+          <div class="icon">📁</div>
+          <div class="txt">اضغط هنا لرفع الصورة</div>
+          <div class="hint">من المعرض أو الكاميرا</div>
+          <div class="upload-btn-inner">اختر صورة</div>
+        </div>
+      </label>
+    </div>
+    <div id="refFilled" style="display:none">
+      <img id="refPreview" class="preview-img">
+      <div class="ok-txt">✓ تم رفع الصورة المرجعية</div>
+      <label for="refInput" class="upload-label">
+        <div class="change-btn">🔄 تغيير الصورة</div>
+      </label>
+    </div>
+  </div>
+
+  <!-- Comp Image -->
+  <div class="card">
+    <div class="card-head">
+      <span>🎯</span>
+      <div>
+        <div class="card-title">صورة المنافس</div>
+        <div class="card-sub">العناصر منها هتتحفظ في الصورة الجديدة</div>
+      </div>
+    </div>
+    <input id="compInput" type="file" accept="image/*" style="display:none" onchange="handleFile(this,'comp')">
+    <div id="compEmpty">
+      <label for="compInput" class="upload-label">
+        <div class="upload-area">
+          <div class="icon">📁</div>
+          <div class="txt">اضغط هنا لرفع الصورة</div>
+          <div class="hint">من المعرض أو الكاميرا</div>
+          <div class="upload-btn-inner">اختر صورة</div>
+        </div>
+      </label>
+    </div>
+    <div id="compFilled" style="display:none">
+      <img id="compPreview" class="preview-img">
+      <div class="ok-txt">✓ تم رفع صورة المنافس</div>
+      <label for="compInput" class="upload-label">
+        <div class="change-btn">🔄 تغيير الصورة</div>
+      </label>
+    </div>
+  </div>
+
+  <!-- Text -->
+  <div class="card">
+    <div class="card-head">
+      <span>✍️</span>
+      <div>
+        <div class="card-title">النص المطلوب</div>
+        <div class="card-sub">النص اللي هيظهر على الـ Thumbnail</div>
+      </div>
+    </div>
+    <span class="lbl" style="margin-top:0">النص *</span>
+    <textarea id="thumbText" placeholder="مثال: كيف تربح 10,000 دولار في شهر واحد 💰"></textarea>
+    <span class="lbl">معلومات إضافية (اختياري)</span>
+    <input id="extraInfo" class="inp inp-rtl" type="text" placeholder="مثال: قناة تمويل، جمهور شباب عرب">
+  </div>
+
+  <!-- Hint -->
+  <div id="hintTxt" class="hint-txt"></div>
+
+  <!-- Generate -->
+  <button id="genBtn" class="gen-btn" disabled onclick="generate()">⚡ ولّد الصورة دلوقتي</button>
+
+  <!-- Spinner -->
+  <div id="spinnerWrap" class="spinner-wrap" style="display:none">
+    <div class="spinner"></div>
+    <div id="spinMsg" class="spin-msg">جارٍ التحليل...</div>
+    <div class="spin-msg">ممكن ياخد 20-30 ثانية</div>
+  </div>
+
+  <!-- Error -->
+  <div id="errorBox" class="error-box" style="display:none"></div>
+
+  <!-- Result -->
+  <div id="resultCard" class="result-card" style="display:none">
+    <div class="result-title">✅ الصورة جاهزة!</div>
+    <img id="resultImg" class="result-img">
+    <button class="dl-btn" onclick="downloadImg()">⬇️ تحميل الصورة</button>
+    <button class="reset-btn" onclick="resetResult()">🔄 ولّد صورة جديدة</button>
+  </div>
+
+</div>
+
+<script>
+var refB64 = null, refMime = null;
+var compB64 = null, compMime = null;
+
+function toggleKey() {
+  var inp = document.getElementById('apiKey');
+  var btn = inp.nextElementSibling;
+  if (inp.type === 'password') { inp.type = 'text'; btn.textContent = '🙈'; }
+  else { inp.type = 'password'; btn.textContent = '👁️'; }
+}
+
+function handleFile(input, which) {
+  var file = input.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var dataUrl = e.target.result;
+    var b64 = dataUrl.split(',')[1];
+    var mime = file.type || 'image/jpeg';
+    if (which === 'ref') {
+      refB64 = b64; refMime = mime;
+      document.getElementById('refPreview').src = dataUrl;
+      document.getElementById('refEmpty').style.display = 'none';
+      document.getElementById('refFilled').style.display = 'block';
+    } else {
+      compB64 = b64; compMime = mime;
+      document.getElementById('compPreview').src = dataUrl;
+      document.getElementById('compEmpty').style.display = 'none';
+      document.getElementById('compFilled').style.display = 'block';
+    }
+    checkReady();
+  };
+  reader.readAsDataURL(file);
+}
+
+function checkReady() {
+  var key = document.getElementById('apiKey').value.trim();
+  var txt = document.getElementById('thumbText').value.trim();
+  var ready = key && refB64 && compB64 && txt;
+  document.getElementById('genBtn').disabled = !ready;
+  var hint = document.getElementById('hintTxt');
+  if (!ready) {
+    if (!key) hint.textContent = '🔑 أدخل الـ API Key أولاً';
+    else if (!refB64) hint.textContent = '⬆ ارفع الصورة المرجعية';
+    else if (!compB64) hint.textContent = '⬆ ارفع صورة المنافس';
+    else hint.textContent = '⬆ أدخل النص المطلوب';
+  } else { hint.textContent = ''; }
+}
+
+document.getElementById('apiKey').addEventListener('input', checkReady);
+document.getElementById('thumbText').addEventListener('input', checkReady);
+
+function showSpinner(msg) {
+  document.getElementById('spinMsg').textContent = msg;
+  document.getElementById('spinnerWrap').style.display = 'block';
+}
+function hideSpinner() { document.getElementById('spinnerWrap').style.display = 'none'; }
+function showError(msg) {
+  hideSpinner();
+  var box = document.getElementById('errorBox');
+  box.textContent = '⚠️ ' + msg;
+  box.style.display = 'block';
+}
+function hideError() { document.getElementById('errorBox').style.display = 'none'; }
+
+async function generate() {
+  var key = document.getElementById('apiKey').value.trim();
+  var txt = document.getElementById('thumbText').value.trim();
+  var extra = document.getElementById('extraInfo').value.trim();
+  if (!key || !refB64 || !compB64 || !txt) return;
+
+  document.getElementById('genBtn').disabled = true;
+  document.getElementById('resultCard').style.display = 'none';
+  hideError();
+
+  showSpinner('🔍 بيحلل نمط صورتك...');
+
+  try {
+    // Step 1: Claude analyzes images
+    var claudeRes = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: 'You are a YouTube thumbnail expert. Return ONLY valid JSON, no extra text, no backticks: {"imagePrompt":"...","negativePrompt":"..."}',
+        messages: [{
+          role: 'user',
+          content: [
+            { type: 'image', source: { type: 'base64', media_type: refMime, data: refB64 } },
+            { type: 'image', source: { type: 'base64', media_type: compMime, data: compB64 } },
+            { type: 'text', text: 'Image 1 = my reference thumbnail style. Image 2 = competitor thumbnail.\nRequired text: "' + txt + '"' + (extra ? '\nContext: ' + extra : '') + '\nCreate a detailed Imagen 3 prompt for a new YouTube thumbnail that: copies the visual style of image 1 (background style, colors, lighting, layout), keeps key elements from image 2 (logos, charts, person), changes background to be similar but unique and different, changes facial expression to shocked/surprised, removes original text and adds: "' + txt + '". Make it very detailed and specific. 16:9 ratio.' }
+          ]
+        }]
+      })
+    });
+
+    if (!claudeRes.ok) { var e = await claudeRes.json(); throw new Error('خطأ في التحليل: ' + (e.error && e.error.message || 'تأكد من الاتصال')); }
+    var claudeData = await claudeRes.json();
+    var rawText = claudeData.content.map(function(c){ return c.text || ''; }).join('');
+    var parsed = JSON.parse(rawText.replace(/```json|```/g,'').trim());
+    var imagePrompt = parsed.imagePrompt + ', YouTube thumbnail, 16:9, high quality, professional, vibrant';
+    var negPrompt = parsed.negativePrompt || 'blurry, low quality, watermark, distorted';
+
+    showSpinner('🎨 بيولّد الصورة بـ Imagen 3...');
+
+    // Step 2: Imagen 3
+    var imagenRes = await fetch(
+      'https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-001:predict?key=' + key,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          instances: [{ prompt: imagePrompt }],
+          parameters: {
+            sampleCount: 1,
+            aspectRatio: '16:9',
+            negativePrompt: negPrompt,
+            personGeneration: 'allow_adult'
+          }
+        })
+      }
+    );
+
+    if (!imagenRes.ok) {
+      var err = await imagenRes.json();
+      var msg = err.error && err.error.message || '';
+      if (msg.indexOf('API_KEY') >= 0 || msg.indexOf('key') >= 0) throw new Error('الـ API Key غلط — تأكد منه');
+      if (msg.indexOf('quota') >= 0) throw new Error('تجاوزت الحد المجاني — انتظر وحاول تاني');
+      if (msg.indexOf('safety') >= 0 || msg.indexOf('block') >= 0) throw new Error('الصورة اتحجبت — جرب صورة تانية');
+      if (msg.indexOf('billing') >= 0) throw new Error('محتاج تفعّل الـ Billing في Google Cloud');
+      throw new Error('خطأ في Imagen: ' + msg);
+    }
+
+    var imagenData = await imagenRes.json();
+    var b64Img = imagenData && imagenData.predictions && imagenData.predictions[0] && imagenData.predictions[0].bytesBase64Encoded;
+    if (!b64Img) throw new Error('مش قادر يولّد الصورة — حاول تاني');
+
+    hideSpinner();
+    document.getElementById('resultImg').src = 'data:image/png;base64,' + b64Img;
+    document.getElementById('resultCard').style.display = 'block';
+    document.getElementById('resultCard').scrollIntoView({ behavior: 'smooth' });
+
+  } catch(e) {
+    showError(e.message || 'حدث خطأ غير متوقع');
+  }
+
+  document.getElementById('genBtn').disabled = false;
+  checkReady();
+}
+
+function downloadImg() {
+  var src = document.getElementById('resultImg').src;
+  if (!src) return;
+  var a = document.createElement('a');
+  a.href = src;
+  a.download = 'thumbnail.png';
+  a.click();
+}
+
+function resetResult() {
+  document.getElementById('resultCard').style.display = 'none';
+  document.getElementById('thumbText').value = '';
+  document.getElementById('extraInfo').value = '';
+  checkReady();
+}
+</script>
+</body>
+</html>
